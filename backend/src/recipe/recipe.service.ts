@@ -1,13 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException,HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Recipe } from './recipe.entity';
 import { User } from 'src/user/user.entity';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class RecipeService {
     constructor(
     @InjectRepository(Recipe) private recipeRepo: Repository<Recipe>,
+    private readonly httpService: HttpService,
   ) {}
 
   // Create a new recipe
@@ -60,5 +63,39 @@ export class RecipeService {
       .leftJoinAndSelect('recipe.postedBy', 'user')
       .where('recipe.name ILIKE :name', { name: `%${name}%` }) // case-insensitive search
       .getMany();
+  }
+
+  // it suggest recipes from Forkify API (proxy)
+  async suggestFromForkify(query: string): Promise<any[]> {
+    if (!query || query.trim().length === 0) return [];
+
+    const url = `https://forkify-api.herokuapp.com/api/search?q=${encodeURIComponent(query)}`;
+
+    try {
+      // HttpService returns an Observable and convert to Promise with lastValueFrom
+      const response = await lastValueFrom(this.httpService.get(url, { timeout: 5000 }));
+      const data = response.data;
+
+      // Forkify's structure (common): { count: N, recipes: [ { recipe_id, title, image_url, publisher, ... } ] }
+      const recipes = Array.isArray(data.recipes) ? data.recipes : [];
+
+      // Map to a lighter suggestion shape for frontend
+      return recipes.map((r: any) => ({
+        id: r.recipe_id,
+        title: r.title,
+        image: r.image_url,
+        publisher: r.publisher,
+        source_url: r.source_url,
+      }));
+    } catch (err: any) {
+      // Log the error server-side (optional)
+      console.error('Forkify API error:', err?.message || err);
+
+      // Throw a controlled HTTP exception so client sees 502 Bad Gateway (external API issue)
+      throw new HttpException(
+        { message: 'Failed to fetch suggestions from external API' },
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
   }
 }

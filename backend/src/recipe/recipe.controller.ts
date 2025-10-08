@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body,Query} from '@nestjs/common';
 import { RecipeService } from './recipe.service';
 import { UserService } from 'src/user/user.service';
 import { Recipe } from './recipe.entity';
@@ -30,6 +30,12 @@ export class RecipeController {
     return this.recipeService.findAll();
   }
 
+  // endpoint: GET /recipes/suggest?q=cake
+  @Get('search/suggest')
+  async suggest(@Query('q') q: string){  //@Query('q'): Forkify requires a query parameter (often q) — we accept q from the frontend query string and pass it to the service
+    return this.recipeService.suggestFromForkify(q);
+  }
+
   @Get(':id')
   async findById(@Param('id') id: number) {
     return this.recipeService.findById(id);
@@ -49,4 +55,7 @@ export class RecipeController {
   async findByName(@Param('name') name: string) {
     return this.recipeService.findByName(name);
   }
+
+  
+
 }
