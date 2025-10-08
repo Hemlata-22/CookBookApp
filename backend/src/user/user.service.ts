@@ -10,9 +10,16 @@ export class UserService {
     @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
-  async register(name: string, email: string, password: string) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = this.userRepo.create({ name, email, password: hashedPassword });
-    return this.userRepo.save(user);
+  async create(userData: Partial<User>) {
+    const user = this.userRepo.create(userData); 
+    return this.userRepo.save(user); 
+  }
+
+  async findByEmail(email: string) {
+    return this.userRepo.findOne({ where: { email } });
+  }
+
+  async findById(id: number) {
+    return this.userRepo.findOne({ where: { id } });
   }
 }
