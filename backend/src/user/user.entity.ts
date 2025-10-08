@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Recipe } from 'src/recipe/recipe.entity';
 
 @Entity()
 export class User {
@@ -16,4 +17,13 @@ export class User {
 
   @Column({ default: 'user'})
   role: string;
+
+  // Recipes created by user
+  @OneToMany(() => Recipe, recipe => recipe.postedBy)
+  recipes: Recipe[];
+
+  // Favorite recipes
+  @ManyToMany(() => Recipe, { cascade: true })
+  @JoinTable()
+  favoriteRecipes: Recipe[];
 }
