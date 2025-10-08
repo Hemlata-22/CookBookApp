@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne,JoinColumn, CreateDateColumn } from 'typeorm';
 import { User } from '../user/user.entity';
+import { Category } from '../category/category.entity';
 
 @Entity()
 export class Recipe {
@@ -23,4 +24,12 @@ export class Recipe {
 
   @Column('simple-array', { nullable: true })
   ingredients: string[]; // stored as comma-separated values(csv)
+
+  // category relation 
+  @ManyToOne(() => Category, category => category.recipes, { nullable: true })
+  @JoinColumn({ name: 'categoryId' })
+  category: Category;
+
+  @Column({ nullable: true })
+  categoryId: number;
 }
