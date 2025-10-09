@@ -1,0 +1,55 @@
+:root {
+  --bg: #f7fafc;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --primary: #22c55e;
+  --primary-600: #16a34a;
+  --ring: rgba(34, 197, 94, 0.25);
+  --border: #e5e7eb;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: var(--text);
+}
+
+button {
+  appearance: none;
+  border: 1px solid transparent;
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 16px;
+}
+
+button:hover {
+  background: var(--primary-600);
+}
+
+input, .ql-container {
+  background: #ffffff;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+

@@ -1,0 +1,142 @@
+/* Container for the whole recipe creator */
+.recipe-creator-container {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fafafa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Heading */
+.recipe-creator-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Form */
+.recipe-creator-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Suggestions wrapper */
+.suggestions-wrapper {
+  position: relative;
+}
+
+.suggestions-loading {
+  font-size: 14px;
+  color: #666;
+  margin-top: 6px;
+}
+
+/* Labels */
+.recipe-creator-container label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+/* Inputs */
+.recipe-creator-container input[type="text"] {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* Quill editor height */
+.ql-container {
+  height: 150px;
+}
+
+/* Ensure editor text is visible on light background */
+.ql-container,
+.ql-toolbar {
+  background: #ffffff;
+  color: #222;
+}
+
+.ql-editor {
+  color: #222;
+}
+
+/* Placeholder color inside quill editor */
+.ql-editor.ql-blank::before {
+  color: #888; /* more visible placeholder */
+}
+
+/* Suggestions list */
+.suggestions-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  background-color: #fff;
+  color: #222; /* Ensure readable text on white background */
+}
+
+.suggestions-list li {
+  padding: 8px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  color: #222;
+}
+
+.suggestions-list li:hover {
+  background-color: #f0f0f0;
+}
+
+/* Submit button */
+.recipe-creator-container button[type="submit"] {
+  padding: 10px 15px;
+  background-color: #0077cc;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.recipe-creator-container button[type="submit"]:hover {
+  background-color: #005fa3;
+}
+
+/* Disabled button variant */
+.recipe-creator-container .btn.disabled,
+.recipe-creator-container button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Thumbnail preview */
+.thumbnail-preview {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.thumbnail-preview img {
+  max-width: 100%;
+  max-height: 240px;
+  border-radius: 8px;
+  border: 1px solid #e1e1e1;
+}
+
+/* Error message */
+.form-error {
+  color: #b00020;
+  background: #ffe6e9;
+  border: 1px solid #ffb3bf;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
