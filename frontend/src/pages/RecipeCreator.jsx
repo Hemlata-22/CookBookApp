@@ -1,64 +1,104 @@
-import React, { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import { api } from '../api/axios';
-import axios from 'axios';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import axios from "axios";
+import { api } from "../api/axios";
+import "../styles/RecipeCreator.css";
 
 function RecipeCreator() {
   // Recipe form state
-  const [name, setName] = useState('');
-  const [instructions, setInstructions] = useState('');
-  const [thumbnail, setThumbnail] = useState('');
-  const [ingredients, setIngredients] = useState('');
+  const [name, setName] = useState("");
+  const [instructions, setInstructions] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
+  const [ingredients, setIngredients] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Debounce name input for external suggestions
+  const debounceTimerRef = useRef(null);
+  const debouncedName = useMemo(() => name.trim(), [name]);
 
   // Fetch suggestions from Forkify API
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (name.trim() === '') {
-        setSuggestions([]);
-        return;
-      }
+    // Clear previous timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // If input is empty, clear suggestions immediately
+    if (debouncedName === "") {
+      setSuggestions([]);
+      return;
+    }
+
+    // Debounce external API request
+    debounceTimerRef.current = setTimeout(async () => {
+      setIsLoadingSuggestions(true);
       try {
-        const res = await axios.get(`https://forkify-api.herokuapp.com/api/search?q=${encodeURIComponent(name)}`);
-        const data = res.data.recipes || [];
-        // Map only required fields
-        const mapped = data.map(r => ({
-          id: r.recipe_id,
+        // Forkify v2 API endpoint
+        const res = await axios.get(
+          `https://forkify-api.herokuapp.com/api/v2/recipes?search=${encodeURIComponent(
+            debouncedName
+          )}`
+        );
+        const data = res?.data?.data?.recipes || [];
+        const mapped = data.map((r) => ({
+          id: r.id,
           title: r.title,
           image: r.image_url,
         }));
         setSuggestions(mapped);
       } catch (err) {
-        console.error('Forkify API error:', err);
+        console.error("Forkify API error:", err);
         setSuggestions([]);
+      } finally {
+        setIsLoadingSuggestions(false);
       }
-    };
+    }, 400);
 
-    fetchSuggestions();
-  }, [name]);
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, [debouncedName]);
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
+
+    // Basic validation
+    if (!name.trim()) {
+      setErrorMessage("Recipe name is required.");
+      return;
+    }
+    if (!instructions || instructions.replace(/<(.|\n)*?>/g, "").trim() === "") {
+      setErrorMessage("Instructions are required.");
+      return;
+    }
+
     try {
-      const res = await api.post('/recipe', {
+      const userRaw = localStorage.getItem('user');
+      const user = userRaw ? JSON.parse(userRaw) : null;
+      const userId = user?.id;
+      const res = await api.post("/recipe", {
+        userId,
         name,
         instructions,
         thumbnail,
-        ingredients: ingredients.split(',').map(i => i.trim()),
+        ingredients: ingredients.split(",").map((i) => i.trim()),
       });
-      console.log('Recipe created:', res.data);
+      console.log("Recipe created:", res.data);
       // Reset form
-      setName('');
-      setInstructions('');
-      setThumbnail('');
-      setIngredients('');
+      setName("");
+      setInstructions("");
+      setThumbnail("");
+      setIngredients("");
       setSuggestions([]);
-      alert('Recipe created successfully!');
+      alert("Recipe created successfully!");
     } catch (err) {
-      console.error('Error creating recipe:', err);
-      alert('Failed to create recipe.');
+      console.error("Error creating recipe:", err);
+      alert("Failed to create recipe.");
     }
   };
 
@@ -75,12 +115,27 @@ function RecipeCreator() {
           autoComplete="off"
         />
         {/* Show Forkify suggestions */}
-        {suggestions.length > 0 && (
-          <ul className="suggestions-list">
-            {suggestions.map(s => (
-              <li key={s.id}>{s.title}</li>
-            ))}
-          </ul>
+        {(isLoadingSuggestions || suggestions.length > 0) && (
+          <div className="suggestions-wrapper">
+            {isLoadingSuggestions && (
+              <div className="suggestions-loading">Searching…</div>
+            )}
+            {suggestions.length > 0 && (
+              <ul className="suggestions-list">
+                {suggestions.map((s) => (
+                  <li
+                    key={s.id}
+                    onClick={() => {
+                      setName(s.title);
+                      setSuggestions([]);
+                    }}
+                  >
+                    {s.title}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         )}
 
         <label>Instructions</label>
@@ -98,6 +153,18 @@ function RecipeCreator() {
           onChange={(e) => setThumbnail(e.target.value)}
           placeholder="Enter image URL (optional)"
         />
+        {thumbnail?.trim() && (
+          <div className="thumbnail-preview">
+            <img
+              src={thumbnail}
+              alt="Recipe thumbnail preview"
+              onError={(e) => {
+                // Hide broken image
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          </div>
+        )}
 
         <label>Ingredients (comma separated)</label>
         <input
@@ -107,7 +174,14 @@ function RecipeCreator() {
           placeholder="e.g., sugar, flour, butter"
         />
 
-        <button type="submit">Create Recipe</button>
+        {errorMessage && <div className="form-error">{errorMessage}</div>}
+        <button
+          type="submit"
+          disabled={!name.trim() || !instructions || instructions.replace(/<(.|\n)*?>/g, "").trim() === ""}
+          className={!name.trim() || !instructions || instructions.replace(/<(.|\n)*?>/g, "").trim() === "" ? "btn disabled" : "btn"}
+        >
+          Create Recipe
+        </button>
       </form>
     </div>
   );
