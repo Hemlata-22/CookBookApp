@@ -1,6 +1,11 @@
 .home-hero {
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.10), rgba(0,0,0,0)),
+    url('https://png.pngtree.com/background/20210710/original/pngtree-gourmet-big-food-promotion-geometric-simple-yellow-background-picture-image_1001073.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   padding: 80px 0 32px 0;
-  background: url('/vite.svg') center/cover no-repeat, linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0));
 }
 
 .home-hero .hero-title {

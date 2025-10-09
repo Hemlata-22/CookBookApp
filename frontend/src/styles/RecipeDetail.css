@@ -1,0 +1,51 @@
+.recipe-detail {
+  padding: 24px 0;
+}
+
+.detail-header h2 {
+  margin: 0 0 6px 0;
+}
+
+.detail-header .meta {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.detail-actions {
+  margin-top: 12px;
+}
+
+.detail-thumb {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin: 16px 0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+}
+
+.ingredients ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.ql-view {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--card);
+  color: var(--text);
+}
+
+@media (max-width: 800px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

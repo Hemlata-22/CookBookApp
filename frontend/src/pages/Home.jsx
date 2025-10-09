@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
 
 function Home() {
   const [recipes, setRecipes] = useState([]);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const load = async () => {
     setLoading(true);
@@ -47,7 +49,7 @@ function Home() {
       {loading && <div>Loading…</div>}
       <div className="home-grid container">
         {recipes.map((r) => (
-          <div key={r.id} className="card">
+          <div key={r.id} className="card" onClick={() => navigate(`/recipe/${r.id}`)} style={{ cursor: 'pointer' }}>
             {r.thumbnail && (
               <img src={r.thumbnail} alt={r.name} />
             )}
@@ -80,7 +82,8 @@ function Home() {
                 alert('Failed to add to favorites');
               }
             }}>Favorite</button>
-              <button onClick={async () => {
+              <button onClick={async (e) => {
+                e.stopPropagation();
               try {
                 await api.delete(`/recipe/${r.id}`);
                 await load();
