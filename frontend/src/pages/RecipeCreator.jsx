@@ -81,6 +81,7 @@ function RecipeCreator() {
       const userRaw = localStorage.getItem('user');
       const user = userRaw ? JSON.parse(userRaw) : null;
       const userId = user?.id;
+      //send create request to backend
       const res = await api.post("/recipe", {
         userId,
         name,

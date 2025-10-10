@@ -4,18 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Home.css';
 
 function Home() {
-  const [recipes, setRecipes] = useState([]);
-  const [query, setQuery] = useState('');
+  const [recipes, setRecipes] = useState([]); //recipe list
+  const [query, setQuery] = useState(''); //search query
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  //load recipe from backend(all or search)
   const load = async () => {
     setLoading(true);
     try {
       if (query.trim()) {
+        //search recipe by name
         const res = await api.get(`/recipe/search/${encodeURIComponent(query)}`);
         setRecipes(res.data || []);
       } else {
+        //get all recipe
         const res = await api.get('/recipe');
         setRecipes(res.data || []);
       }
@@ -27,7 +30,7 @@ function Home() {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, []);//initial load
 
   return (
     <div className="home-page">
@@ -60,6 +63,7 @@ function Home() {
             <div className="card-actions">
               <button onClick={async () => {
               try {
+                //add recipe to favorites
                 let userRaw = localStorage.getItem('user');
                 let user = userRaw ? JSON.parse(userRaw) : null;
                 if (!user?.id) {

@@ -3,12 +3,16 @@ import { api } from '../api/axios';
 import '../styles/Favorites.css';
 
 function Favorites() {
+  //state to store fav recipe
   const [recipes, setRecipes] = useState([]);
 
+  //function to load user's fav recipe
   const load = async () => {
     try {
+      //get user from localstorage (if previously saved)
       let userRaw = localStorage.getItem('user');
       let user = userRaw ? JSON.parse(userRaw) : null;
+      //agar user object me id nh hai, token decode krke set krenge
       if (!user?.id) {
         const token = localStorage.getItem('token');
         if (token) {
@@ -21,7 +25,9 @@ function Favorites() {
           } catch {}
         }
       }
-      if (!user?.id) return;
+      if (!user?.id) return;//agr user id na mile, return
+
+      //fetch fav from backend
       const res = await api.get(`/user/${user.id}/favorites`);
       setRecipes(res.data || []);
     } catch (e) {
@@ -30,6 +36,7 @@ function Favorites() {
     }
   };
 
+  //load fav on component mount
   useEffect(() => { load(); }, []);
 
   return (
@@ -44,10 +51,11 @@ function Favorites() {
             <h4 style={{ margin: '8px 0' }}>{r.name}</h4>
             <button onClick={async () => {
               try {
+                //remove recipe from fav
                 const userRaw = localStorage.getItem('user');
                 const user = userRaw ? JSON.parse(userRaw) : null;
                 await api.delete(`/user/${user.id}/favorites/${r.id}`);
-                await load();
+                await load();//reload updated fav
               } catch (e) {
                 alert('Failed to remove favorite');
               }

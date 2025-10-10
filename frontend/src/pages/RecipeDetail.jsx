@@ -4,7 +4,7 @@ import { api } from '../api/axios';
 import '../styles/RecipeDetail.css';
 
 function RecipeDetail() {
-  const { id } = useParams();
+  const { id } = useParams();//get recipe id from url
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

@@ -11,6 +11,7 @@ import RecipeCreator from './pages/RecipeCreator.jsx';
 import RecipeDetail from './pages/RecipeDetail.jsx';
 
 function App() {
+  //localstorage se token fetch kr rahe hai
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   return (
     <div className="app-shell">
@@ -28,6 +29,7 @@ function App() {
           <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); location.href = '/login'; }}>Logout</button>
         )}
       </nav>
+      {/* main content */}
       <main className="app-main">
         <Routes>
           <Route path="/" element={token ? <Home /> : <Navigate to="/login" replace />} />

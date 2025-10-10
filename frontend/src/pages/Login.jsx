@@ -11,10 +11,14 @@ function Login() {
     e.preventDefault();
     setError('');
     try {
+      //call backend login API
       const res = await api.post('/auth/login', { email, password });
       const token = res.data?.access_token;
       if (!token) throw new Error('No token');
+
+      //save token in localstorage
       localStorage.setItem('token', token);
+
       // Decode JWT payload to extract user id and other claims
       try {
         const [, payloadB64] = token.split('.');
@@ -22,9 +26,11 @@ function Login() {
         const userId = payloadJson?.id;
         localStorage.setItem('user', JSON.stringify({ id: userId, email }));
       } catch (_) {
+
         // Fallback to email only if decoding fails
         localStorage.setItem('user', JSON.stringify({ email }));
       }
+      //Redirect to home
       location.href = '/';
     } catch (e) {
       setError('Login failed');

@@ -12,9 +12,10 @@ function Register() {
     e.preventDefault();
     setError('');
     try {
+      //call backend register API
       await api.post('/auth/register', { name, email, password });
       // simple redirect to login
-      location.href = '/login';
+      location.href = '/login'; //redirect to login after success
     } catch (e) {
       setError('Register failed');
     }
