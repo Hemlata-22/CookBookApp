@@ -18,16 +18,16 @@ export class RecipeService {
     const recipe = this.recipeRepo.create({
       ...recipeData,
       postedBy: user, // link recipe to user
-      postedAt: new Date(),
+      postedAt: new Date(),//current date/time set kr rahe hai
     });
-    return this.recipeRepo.save(recipe);
+    return this.recipeRepo.save(recipe);//DB m save krna
   }
 
   // Get all recipes
   async findAll(): Promise<Recipe[]> {
     return this.recipeRepo.find({
-      relations: ['postedBy'], // include user info
-      order: { postedAt: 'DESC' },
+      relations: ['postedBy'], // sath hi user info bhi fetch kr rhae hai
+      order: { postedAt: 'DESC' },//Latest recipe first
     });
   }
 
@@ -35,7 +35,7 @@ export class RecipeService {
   async findById(id: number): Promise<Recipe | null> {
     return this.recipeRepo.findOne({
       where: { id },
-      relations: ['postedBy'],
+      relations: ['postedBy'],//include user info
     });
   }
 
@@ -52,7 +52,7 @@ export class RecipeService {
 
   // Delete recipe
   async remove(id: number): Promise<{ message: string }> {
-    await this.recipeRepo.delete(id);
+    await this.recipeRepo.delete(id);//Delete from DB
     return { message: 'Recipe deleted successfully' };
   }
 
@@ -60,7 +60,7 @@ export class RecipeService {
   async findByName(name: string): Promise<Recipe[]> {
     return this.recipeRepo
       .createQueryBuilder('recipe')
-      .leftJoinAndSelect('recipe.postedBy', 'user')
+      .leftJoinAndSelect('recipe.postedBy', 'user')//Include user info
       .where('recipe.name ILIKE :name', { name: `%${name}%` }) // case-insensitive search
       .getMany();
   }
@@ -72,14 +72,14 @@ export class RecipeService {
     const url = `https://forkify-api.herokuapp.com/api/search?q=${encodeURIComponent(query)}`;
 
     try {
-      // HttpService returns an Observable and convert to Promise with lastValueFrom
+      // HttpService Observable return karta hai, lastValueFrom se promise banate hain
       const response = await lastValueFrom(this.httpService.get(url, { timeout: 5000 }));
       const data = response.data;
 
       // Forkify's structure (common): { count: N, recipes: [ { recipe_id, title, image_url, publisher, ... } ] }
       const recipes = Array.isArray(data.recipes) ? data.recipes : [];
 
-      // Map to a lighter suggestion shape for frontend
+      // Light weight object banake frontend ke liye return karte hain
       return recipes.map((r: any) => ({
         id: r.recipe_id,
         title: r.title,
@@ -91,7 +91,7 @@ export class RecipeService {
       // Log the error server-side (optional)
       console.error('Forkify API error:', err?.message || err);
 
-      // Throw a controlled HTTP exception so client sees 502 Bad Gateway (external API issue)
+      // External API error ko client ke liye HTTP exception ke through throw karte hain
       throw new HttpException(
         { message: 'Failed to fetch suggestions from external API' },
         HttpStatus.BAD_GATEWAY,

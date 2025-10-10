@@ -11,5 +11,5 @@ export class Category {
 
   // One category can have many recipes
   @OneToMany(() => Recipe, (recipe) => recipe.category)
-  recipes: Recipe[];
+  recipes: Recipe[]; //relation with recipe entity
 }

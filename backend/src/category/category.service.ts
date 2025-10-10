@@ -11,19 +11,19 @@ export class CategoryService {
 
   // create a new category
   async create(name: string): Promise<Category> {
-    const category = this.categoryRepo.create({ name });
-    return this.categoryRepo.save(category);
+    const category = this.categoryRepo.create({ name }); //Entity create
+    return this.categoryRepo.save(category); //DB me save
   }
 
   // get all categories
   async findAll(): Promise<Category[]> {
-    return this.categoryRepo.find();
+    return this.categoryRepo.find(); //simply find all
   }
 
   // get category by ID
   async findById(id: number): Promise<Category> {
     const category = await this.categoryRepo.findOne({ where: { id } });
-    if (!category) throw new NotFoundException('Category not found');
+    if (!category) throw new NotFoundException('Category not found'); //Error handle
     return category;
   }
 }

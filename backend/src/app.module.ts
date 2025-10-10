@@ -9,22 +9,24 @@ import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
+    // Database connection setup using TypeORM
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'cookbook_user',
-      password: 'cookbook_pass',
-      database: 'cookbook_db',
-      autoLoadEntities: true,
-      synchronize: true, // automatically creates tables from entities
+      type: 'postgres',              // Database type
+      host: 'localhost',             // DB host
+      port: 5432,                    // DB port
+      username: 'cookbook_user',     // DB username
+      password: 'cookbook_pass',     // DB password
+      database: 'cookbook_db',       // DB name
+      autoLoadEntities: true,        // Automatically load all entity files
+      synchronize: true,             // automatically creates tables from entities
     }),
-    UserModule,
-    AuthModule,
-    RecipeModule,
-    CategoryModule,
+    // Importing feature modules
+    UserModule,    // User related functionality (CRUD)
+    AuthModule,    // Authentication functionality (login/register)
+    RecipeModule,  // Recipe related functionality
+    CategoryModule,// Category related functionality
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController], // Default controller 
+  providers: [AppService],      // Default service 
 })
-export class AppModule {}
+export class AppModule {}    // Root module jo backend app ke liye saare modules ko combine karta hai

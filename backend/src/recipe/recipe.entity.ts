@@ -5,7 +5,7 @@ import { Category } from '../category/category.entity';
 @Entity()
 export class Recipe {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number;//unique id for each user
 
   @Column()
   name: string;
@@ -14,16 +14,16 @@ export class Recipe {
   instructions: string;
 
   @Column({ nullable: true })
-  thumbnail: string;
+  thumbnail: string; //optional imagE url
 
   @CreateDateColumn()
-  postedAt: Date;
+  postedAt: Date;//Automatically set jb recipe create hoti hai
 
   @ManyToOne(() => User, user => user.id)
-  postedBy: User;
+  postedBy: User;//recipe kis user ne post ki hai
 
   @Column('simple-array', { nullable: true })
-  ingredients: string[]; // stored as comma-separated values(csv)
+  ingredients: string[]; // stored ingredients as comma-separated values(csv)
 
   // category relation 
   @ManyToOne(() => Category, category => category.recipes, { nullable: true })
@@ -31,5 +31,5 @@ export class Recipe {
   category: Category;
 
   @Column({ nullable: true })
-  categoryId: number;
+  categoryId: number; //Foreign key
 }

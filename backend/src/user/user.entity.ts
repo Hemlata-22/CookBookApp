@@ -4,19 +4,19 @@ import { Recipe } from 'src/recipe/recipe.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number; 
 
   @Column()
   name:string;
 
   @Column({ unique: true })
-  email: string;
+  email: string; 
 
   @Column()
   password: string;
 
   @Column({ default: 'user'})
-  role: string;
+  role: string;  //Role: 'user' ya 'admin'
 
   // Recipes created by user
   @OneToMany(() => Recipe, recipe => recipe.postedBy)
@@ -24,6 +24,6 @@ export class User {
 
   // Favorite recipes
   @ManyToMany(() => Recipe, { cascade: true })
-  @JoinTable()
+  @JoinTable()   // Join table banata hai User-Favorites relationship ke liye
   favoriteRecipes: Recipe[];
 }
