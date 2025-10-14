@@ -6,13 +6,15 @@ services:
     container_name: cookbook_db
     restart: always
     environment:
-      POSTGRES_USER: cookbook_user
-      POSTGRES_PASSWORD: cookbook_pass
-      POSTGRES_DB: cookbook_db
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    env_file:
+      - .env    #tells Docker to read environment variables from .env file  
 
 volumes:
   db_data:
